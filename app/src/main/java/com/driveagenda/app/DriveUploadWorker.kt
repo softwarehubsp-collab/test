@@ -3,7 +3,7 @@ package com.driveagenda.app
 import android.content.Context
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
-import com.google.api.client.extensions.android.http.AndroidHttp
+import com.google.api.client.http.javanet.NetHttpTransport
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential
 import com.google.api.client.http.InputStreamContent
 import com.google.api.client.json.gson.GsonFactory
@@ -28,7 +28,7 @@ class DriveUploadWorker(ctx: Context, params: WorkerParameters) : CoroutineWorke
             val source = File(item.path)
             if (!source.exists()) throw IllegalStateException("Archivo local no disponible")
             val credential = GoogleAccountCredential.usingOAuth2(applicationContext, listOf(DriveScopes.DRIVE_FILE)).apply { selectedAccountName = name }
-            val drive = Drive.Builder(AndroidHttp.newCompatibleTransport(), GsonFactory.getDefaultInstance(), credential)
+            val drive = Drive.Builder(NetHttpTransport(), GsonFactory.getDefaultInstance(), credential)
                 .setApplicationName("Drive Agenda").build()
             source.inputStream().use { stream ->
                 val media = InputStreamContent(item.mime, stream).apply { length = source.length() }
